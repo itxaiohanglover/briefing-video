@@ -1,0 +1,49 @@
+{
+  "style": "news-report",
+  "orientation": "portrait",
+  "dimensions": {
+    "portrait": { "width": 1080, "height": 1920 }
+  },
+  "tts": {
+    "provider": "minimax",
+    "voiceId": "your-voice-id",
+    "speed": 1.0
+  },
+  "subtitles": {
+    "enabled": true,
+    "highlightCurrent": true,
+    "backgroundOpacity": 0.20,
+    "fontSize": 36,
+    "position": "bottom"
+  },
+  "scenes": {
+    "intro": {
+      "layout": "split",
+      "imagePosition": "left",
+      "imageWidth": 45,
+      "imageOpacity": 0.90,
+      "kenBurns": true
+    },
+    "slideshow": {
+      "layout": "background",
+      "imageOpacity": 0.55,
+      "kenBurns": true,
+      "captionPosition": "bottom"
+    },
+    "subtitle": {
+      "layout": "solid",
+      "bgBlur": true,
+      "newsBadge": true
+    },
+    "dashboard": {
+      "layout": "solid",
+      "cardCount": 4,
+      "animation": "counter"
+    },
+    "outro": {
+      "layout": "background",
+      "imageOpacity": 0.40,
+      "newsTicker": true
+    }
+  }
+}

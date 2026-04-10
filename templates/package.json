@@ -1,0 +1,25 @@
+{
+  "name": "briefing-video",
+  "version": "1.0.0",
+  "description": "政务/产业新闻简报短视频生成",
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion render src/index.ts NewsVideo out/video.mp4",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.447",
+    "@remotion/player": "^4.0.447",
+    "@remotion/transitions": "^4.0.447",
+    "@remotion/media": "^4.0.447",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "remotion": "^4.0.447"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/web": "^0.0.140",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}
