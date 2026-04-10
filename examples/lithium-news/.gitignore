@@ -1,0 +1,17 @@
+# 自动生成文件
+public/audio/
+out/
+node_modules/
+scenes.json
+timing.json
+src/audioConfig.ts
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db

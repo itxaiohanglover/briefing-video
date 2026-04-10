@@ -46,12 +46,33 @@ if (存在 package.json 或 scenes.json):
 ### Step 3: 创建用户目录
 
 ```bash
-mkdir -p content/ images/ public/audio out/
+mkdir -p input/ content/ images/ public/audio out/
 ```
 
-### Step 4: 创建示例内容文件
+### Step 4: 创建示例输入文件
 
-创建 `content/01-intro.md`：
+创建 `input/news.md`（用户原始文档）：
+
+```markdown
+---
+title: 遂宁锂电产业突破千亿产值
+source: 四川在线
+---
+
+# 遂宁：如何再赴新"锂"想？
+
+当2026年的春天如约而至时，锂电产业领域的一场"寒冬"似乎正迎来回暖迹象...
+
+## 关键数据
+
+- 产业产值：突破1050亿元
+- 全国占比：15%
+- 企业数量：200家
+```
+
+**说明**：用户只需将原始新闻文档放入 `input/` 目录，构建时会自动切分到 `content/`。
+
+### Step 5: 安装依赖
 ```markdown
 ---
 scene: intro
@@ -75,25 +96,32 @@ npm install
 ```
 ✅ 初始化完成！
 
-下一步：
-1. 编辑 content/*.md 放入你的新闻内容
+使用方式：
+1. 【推荐】将原始新闻文档放入 input/news.md
 2. 放入图片到 images/ 目录
 3. 运行 /briefing-video build 生成视频
 
+AI 会自动将 input/news.md 切分为 content/ 下的 5 个场景。
+
 文件说明：
-- content/01-intro.md    - 开场场景
-- content/02-slideshow.md - 图片轮播
-- content/03-subtitle.md  - 字幕段落
-- content/04-dashboard.md - 数据展示
-- content/05-outro.md     - 结尾
+- input/news.md         - 【放入】原始大段文档
+- content/*.md          - 【自动生成】切分后的场景
+- images/               - 【放入】配图素材
 ```
 
 ## 初始化后目录结构
 
 ```
 my-project/
-├── content/           # 用户编辑
-├── images/            # 用户放入
+├── input/             # 【放入】原始大段文档
+│   └── news.md
+├── content/           # 【AI生成】切分后的5场景
+│   ├── 01-intro.md
+│   ├── 02-slideshow.md
+│   ├── 03-subtitle.md
+│   ├── 04-dashboard.md
+│   └── 05-outro.md
+├── images/            # 【放入】配图素材
 ├── public/
 │   └── audio/         # 自动生成
 ├── src/

@@ -5,7 +5,13 @@
 ```
 /briefing-video build
     │
+    ├── Step 0: AI 智能切分（如存在 input/news.md）
+    │   └── 读取 input/news.md
+    │   └── Claude 分析文档结构
+    │   └── 提取关键信息 → 生成 content/ 下的 5 个场景文件
+    │
     ├── Step 1: 解析 Markdown
+    │   └── 读取 content/*.md
     │   └── 生成 scenes.json
     │
     ├── Step 2: 生成音频（TTS）
@@ -24,7 +30,51 @@
 
 ### /briefing-video parse
 
-仅解析 Markdown，生成 scenes.json：
+解析 Markdown 生成 scenes.json：
+
+```bash
+# 步骤 0: AI 智能切分（如 input/news.md 存在）
+if (存在 input/news.md):
+    读取 input/news.md
+    Claude 分析文档结构，提取关键信息
+    生成 content/01-intro.md ~ 05-outro.md
+
+# 步骤 1: 解析 content/*.md → scenes.json
+读取 content/*.md
+提取 frontmatter + 正文
+生成 scenes.json
+```
+
+### AI 切分逻辑
+
+当检测到 `input/news.md` 时，Claude 按以下规则切分：
+
+**Scene 1: Intro（开场）**
+- 提取新闻导语：谁、何时、何地、发生了什么
+- 字数：30-40 字
+- 要求：包含标题 + 一句话核心事实
+
+**Scene 2: Slideshow（图片轮播）**
+- 提取 2-3 个关键事件/地点/成果
+- 每段 20-30 字
+- 适合配图展示的内容
+
+**Scene 3: Subtitle（字幕段落）**
+- 提取产业/背景总结性陈述
+- 字数：40-60 字
+- 突出产业链完整性或独特优势
+
+**Scene 4: Dashboard（数据展示）**
+- 提取带数字的关键指标
+- 寻找：产值、占比、数量、增长等数据
+- 生成 2-4 个数据卡片
+
+**Scene 5: Outro（结尾）**
+- 提取未来展望或总结性陈述
+- 字数：20-30 字
+- 展望或愿景式结尾
+
+### /briefing-video parse（仅解析）
 
 ```bash
 # 读取 content/*.md

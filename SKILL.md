@@ -29,21 +29,20 @@ scoop install ffmpeg   # Windows
 
 ## 内容格式
 
-### Markdown 文件
+### 输入方式
 
-```markdown
----
-scene: intro
-image: cover.jpg
-layout: split
----
+**方式一：AI 智能切分（推荐）**
 
-# 遂宁锂电产业突破千亿产值
+将原始大段文档放入 `input/news.md`，构建时 Claude 自动切分为 5 场景：
 
-遂宁锂电产业迎来重大突破...
+```
+input/
+└── news.md          # 原始新闻文档
 ```
 
-### 文件命名
+**方式二：直接编辑（精细控制）**
+
+直接编辑 `content/` 下的场景文件：
 
 ```
 content/
@@ -52,6 +51,20 @@ content/
 ├── 03-subtitle.md   # 字幕段落
 ├── 04-dashboard.md  # 数据展示（可选）
 └── 05-outro.md      # 结尾
+```
+
+### Markdown 格式
+
+```markdown
+---
+scene: intro
+image: cover.jpg
+layout: split
+---
+
+# 标题
+
+正文内容...
 ```
 
 ### Scene04 数据配置（可选）
