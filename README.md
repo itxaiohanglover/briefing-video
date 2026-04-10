@@ -20,13 +20,7 @@
 ## 安装
 
 ```bash
-npx add-skill itxaiohanglover/briefing-video
-```
-
-或使用 Claude Code：
-
-```
-/briefing-video
+npx add itxaiohanglover/briefing-video
 ```
 
 ## 特性
