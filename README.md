@@ -1,4 +1,8 @@
-# Briefing Video
+<p align="center">
+  <img src="logo.png" width="120" alt="Briefing Video Logo">
+</p>
+
+<h1 align="center">Briefing Video</h1>
 
 <p align="center">
   <b>政务/产业新闻简报短视频自动生成工具</b>
