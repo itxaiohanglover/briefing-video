@@ -14,9 +14,9 @@ from pathlib import Path
 import edge_tts
 
 # 配置
-DEFAULT_VOICE = "zh-CN-YunxiNeural"  # 男声新闻主播
+DEFAULT_VOICE = "zh-CN-YunxiNeural"
 VOICE = os.environ.get("EDGE_TTS_VOICE", DEFAULT_VOICE)
-RATE = os.environ.get("EDGE_TTS_RATE", "+0%%")  # 语速调整，如 "+20%%"
+RATE = os.environ.get("EDGE_TTS_RATE", "+0%")
 FPS = 30
 
 
@@ -24,58 +24,33 @@ async def generate_scene_audio(
     text: str, output_path: str, voice: str, rate: str
 ) -> list[dict]:
     """
-    使用 edge-tts 生成单个场景的音频，返回每句时间轴
+    生成单个场景的音频，通过 SentenceBoundary 获取精确的每句时间轴
     """
     communicate = edge_tts.Communicate(text, voice, rate=rate)
 
     sentences = []
-    current_text = ""
-    current_offset_us = None
 
-    with open(output_path, "wb") as audio_file:
+    with open(output_path, "wb") as f:
         async for chunk in communicate.stream():
             if chunk["type"] == "audio":
-                audio_file.write(chunk["data"])
+                f.write(chunk["data"])
+            elif chunk["type"] == "SentenceBoundary":
+                # offset/duration 单位: ticks (100ns)
+                # 1 秒 = 10,000,000 ticks
+                sentences.append({
+                    "text": chunk["text"].strip(),
+                    "offset_us": chunk["offset"] // 10,     # ticks → 微秒
+                    "duration_us": chunk["duration"] // 10,  # ticks → 微秒
+                })
 
-            elif chunk["type"] == "WordBoundary":
-                # 记录每个词/句的边界
-                offset_us = chunk["offset"]  # 微秒
-                duration_us = chunk["duration"]  # 微秒
-                text_segment = chunk["text"]
-
-                if current_offset_us is None:
-                    current_offset_us = offset_us
-
-                # 用标点判断句子结束
-                current_text += text_segment
-                if text_segment and text_segment[-1] in "。！？.!?；;":
-                    sentences.append({
-                        "text": current_text.strip(),
-                        "offset_us": current_offset_us,
-                        "duration_us": offset_us + duration_us - current_offset_us,
-                    })
-                    current_text = ""
-                    current_offset_us = None
-
-    # 处理最后一句（无标点结尾）
-    if current_text.strip() and current_offset_us is not None:
-        # 获取音频文件大小来估算最后一帧
-        file_size = os.path.getsize(output_path)
-        # 粗略估算：最后一句话持续到音频结尾
-        # 使用上一句的结束作为最后一句话的开始
-        last_end_us = sentences[-1]["offset_us"] + sentences[-1]["duration_us"] if sentences else 0
-        sentences.append({
-            "text": current_text.strip(),
-            "offset_us": current_offset_us,
-            "duration_us": last_end_us - current_offset_us if last_end_us > current_offset_us else 2000000,
-        })
-
-    # 如果 edge-tts 没有返回任何 boundary，整段作为一个句子
     if not sentences:
+        # fallback: 整段作为一句
+        file_size = os.path.getsize(output_path)
+        est_duration_us = int(file_size * 8 / 128000 * 1_000_000)
         sentences.append({
             "text": text.strip(),
             "offset_us": 0,
-            "duration_us": 10000000,  # 占位，后续用实际音频时长修正
+            "duration_us": est_duration_us,
         })
 
     return sentences
@@ -84,46 +59,34 @@ async def generate_scene_audio(
 def build_timing_json(
     all_timings: dict, scenes_data: dict
 ) -> dict:
-    """
-    将所有场景的时间轴合并为 timing.json 格式
-    匹配 Root.tsx 的 TimingData 接口
-    """
-    # 场景类型映射（用于 label 字段）
-    scene_types = {
-        "scene_01": "intro",
-        "scene_02": "slideshow",
-        "scene_03": "subtitle",
-        "scene_04": "dashboard",
-        "scene_05": "outro",
-    }
-
+    """合并所有场景的时间轴为 timing.json"""
     sections = []
     current_frame = 0
     total_duration_sec = 0.0
 
     for scene in scenes_data.get("scenes", []):
         scene_id = scene.get("id", "")
-        scene_type = scene.get("type", scene_types.get(scene_id, "unknown"))
+        scene_type = scene.get("type", "unknown")
         timings = all_timings.get(scene_id, [])
 
         if not timings:
             continue
 
-        # 计算场景总时长（微秒 → 秒 → 帧）
-        last_sentence = timings[-1]
-        scene_duration_us = last_sentence["offset_us"] + last_sentence["duration_us"]
-        scene_duration_sec = scene_duration_us / 10_000_000.0
+        # 场景总时长 = 最后一句话结束
+        last = timings[-1]
+        scene_duration_us = last["offset_us"] + last["duration_us"]
+        scene_duration_sec = scene_duration_us / 1_000_000.0
         scene_frames = max(1, round(scene_duration_sec * FPS))
 
-        # 构建句子时间轴
+        # 句子时间轴（帧）
         sentence_timings = []
         for s in timings:
-            s_start_frame = round(s["offset_us"] / 10_000_000.0 * FPS)
-            s_duration_frames = max(1, round(s["duration_us"] / 10_000_000.0 * FPS))
+            s_start = round(s["offset_us"] / 1_000_000.0 * FPS)
+            s_dur = max(1, round(s["duration_us"] / 1_000_000.0 * FPS))
             sentence_timings.append({
                 "text": s["text"],
-                "start_frame": s_start_frame,
-                "end_frame": s_start_frame + s_duration_frames,
+                "start_frame": s_start,
+                "end_frame": s_start + s_dur,
             })
 
         section = {
@@ -135,7 +98,6 @@ def build_timing_json(
             "sentences": sentence_timings,
         }
         sections.append(section)
-
         current_frame += scene_frames
         total_duration_sec += scene_duration_sec
 
@@ -148,14 +110,10 @@ def build_timing_json(
 
 
 async def main():
-    """
-    主函数：读取 scenes.json，生成音频 + timing.json
-    """
-    # 检查 scenes.json
+    """主函数：读取 scenes.json，生成音频 + timing.json"""
     scenes_path = Path("scenes.json")
     if not scenes_path.exists():
         print("错误：未找到 scenes.json")
-        print("请先运行 Markdown 解析生成 scenes.json")
         sys.exit(1)
 
     with open(scenes_path, "r", encoding="utf-8") as f:
@@ -166,11 +124,10 @@ async def main():
         print("错误：scenes.json 中没有场景数据")
         sys.exit(1)
 
-    # 创建音频输出目录
     audio_dir = Path("public/audio")
     audio_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"开始生成音频（共 {len(scenes)} 个场景）\n")
+    print(f"开始生成音频（共 {len(scenes)} 个场景）")
     print(f"语音: {VOICE}\n")
 
     all_timings = {}
@@ -188,21 +145,17 @@ async def main():
 
         output_path = audio_dir / f"{scene_id}.mp3"
 
-        # 断点续传：音频已存在时跳过生成，但仍需时间轴
+        # 断点续传：音频已存在时跳过，但仍从 SentenceBoundary 获取 timing
         if output_path.exists():
             print(f"[{i}/{len(scenes)}] {scene_id}: 已存在，跳过生成")
             skip_count += 1
-
-            # 即使跳过生成，仍需重新计算 timing（确保 timing.json 完整）
             try:
-                timings = await generate_scene_audio(narration, str(output_path) + ".tmp", VOICE, RATE)
+                # 重新生成到临时文件获取 timing
+                tmp_path = str(output_path) + ".tmp"
+                timings = await generate_scene_audio(narration, tmp_path, VOICE, RATE)
                 all_timings[scene_id] = timings
-                # 删除临时文件（我们只是需要 timing 数据）
-                tmp_path = Path(str(output_path) + ".tmp")
-                if tmp_path.exists():
-                    tmp_path.unlink()
+                Path(tmp_path).unlink(missing_ok=True)
             except Exception:
-                # 如果重新生成失败，使用空的 timing
                 all_timings[scene_id] = []
             continue
 
