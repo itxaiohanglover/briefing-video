@@ -73,19 +73,6 @@ source: 四川在线
 **说明**：用户只需将原始新闻文档放入 `input/` 目录，构建时会自动切分到 `content/`。
 
 ### Step 5: 安装依赖
-```markdown
----
-scene: intro
-image: cover.jpg
-layout: split
----
-
-# 标题
-
-这里是导语内容...
-```
-
-### Step 5: 安装依赖
 
 ```bash
 npm install
