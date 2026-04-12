@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" width="120" alt="Briefing Video Logo">
+  <img src="assets/logo.png" width="120" alt="Briefing Video Logo">
 </p>
 
 <h1 align="center">Briefing Video</h1>
@@ -21,6 +21,16 @@
   </a>
 </p>
 
+---
+
+## 架构图
+
+<p align="center">
+  <img src="assets/frame.png" width="800" alt="Briefing Video Architecture">
+</p>
+
+---
+
 ## 安装
 
 ```bash
@@ -32,24 +42,57 @@ npx add itxaiohanglover/briefing-video
 - 🎙️ **音频优先** - Edge TTS 驱动，音画自动同步
 - 📱 **竖屏优化** - 1080×1920，适合视频号/抖音/快手
 - 🎬 **5场景模板** - Intro → Slideshow → Subtitle → Dashboard → Outro
-- 📝 **精确字幕** - 基于音频时间轴的字幕同步
+- 📝 **精确字幕** - 基于音频时间轴的按句字幕同步
 - 📊 **数据可视化** - 支持数据卡片 + 可选产业链流程
+- 🎨 **统一配色** - 深蓝暗色系 + 红粉强调色
 
 ## 工作流
 
 ```
-Markdown + 图片 → scenes.json → TTS → 渲染 → MP4
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Markdown   │ ──▶ │  scenes.json │ ──▶ │  Edge TTS   │ ──▶ │   Remotion  │
+│   + 图片    │     │   场景配置   │     │ 音频+时间轴 │     │    渲染     │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+                                                                  │
+                                                                  ▼
+                                                           ┌─────────────┐
+                                                           │   MP4 视频  │
+                                                           └─────────────┘
 ```
 
 ## 命令
 
 | 命令 | 说明 |
 |------|------|
-| `/briefing-video init` | 初始化项目 |
-| `/briefing-video build` | 完整构建 |
-| `/briefing-video parse` | 仅解析 Markdown |
-| `/briefing-video audio` | 仅生成音频 |
+| `/briefing-video init` | 初始化项目结构 |
+| `/briefing-video build` | 完整构建（解析→音频→渲染）|
+| `/briefing-video parse` | 仅解析 Markdown → scenes.json |
+| `/briefing-video audio` | 仅生成音频 + timing.json |
 | `/briefing-video render` | 仅渲染视频 |
+
+## 目录结构
+
+```
+my-project/
+├── input/
+│   └── news.md           # 原始新闻文档
+├── images/               # 配图素材
+├── content/              # AI 切分后的场景 Markdown
+├── scenes.json           # 场景配置
+├── scripts/
+│   └── generate_audio.py # Edge TTS 音频生成
+├── public/
+│   └── audio/
+│       ├── background.mp3    # 背景音乐
+│       ├── timing.json       # 字幕时间轴
+│       └── scene_*.mp3       # 各场景配音
+├── src/
+│   ├── scenes/           # 5 个场景组件
+│   ├── components/       # 共享组件
+│   └── Root.tsx          # 视频根组件
+└── out/
+    └── video.mp4         # 输出视频
+```
 
 ## 技术栈
 
