@@ -12,6 +12,7 @@
     "@remotion/player": "^4.0.447",
     "@remotion/transitions": "^4.0.447",
     "@remotion/media": "^4.0.447",
+    "@remotion/compositor-win32-x64-msvc": "^4.0.447",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "remotion": "^4.0.447"

@@ -1,5 +1,7 @@
 import { Config } from "@remotion/cli/config";
 
+Config.setBrowserExecutable("C:/Program Files/Google/Chrome/Application/chrome.exe");
+
 export const config: Config = {
   // 默认渲染配置
   setDefaults: {

@@ -145,8 +145,8 @@ async def main():
 
         output_path = audio_dir / f"{scene_id}.mp3"
 
-        # 断点续传：音频已存在时跳过，但仍从 SentenceBoundary 获取 timing
-        if output_path.exists():
+        # 断点续传：音频已存在且非空时跳过，但仍从 SentenceBoundary 获取 timing
+        if output_path.exists() and output_path.stat().st_size > 0:
             print(f"[{i}/{len(scenes)}] {scene_id}: 已存在，跳过生成")
             skip_count += 1
             try:

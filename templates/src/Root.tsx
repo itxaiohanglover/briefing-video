@@ -87,18 +87,25 @@ interface NewsVideoProps {
 }
 
 // 主视频组件
-const NewsVideo: React.FC<NewsVideoProps> = ({
+interface NewsVideoFullProps extends NewsVideoProps {
+  hasBackgroundMusic?: boolean;
+}
+
+const NewsVideo: React.FC<NewsVideoFullProps> = ({
   enabledScenes,
   totalFrames,
+  hasBackgroundMusic = false,
 }) => {
   return (
     <AbsoluteFill>
-      {/* 背景音乐 */}
-      <BackgroundMusic
-        src="audio/background.mp3"
-        videoDurationInFrames={totalFrames}
-        volume={0.2}
-      />
+      {/* 背景音乐（仅在 public/audio/background.mp3 存在时启用） */}
+      {hasBackgroundMusic && (
+        <BackgroundMusic
+          src="audio/background.mp3"
+          videoDurationInFrames={totalFrames}
+          volume={0.2}
+        />
+      )}
 
       {/* 音频波形可视化 */}
       <AudioWaveform
@@ -189,10 +196,15 @@ export const RemotionRoot: React.FC = () => {
   // 计算总帧数
   const totalFrames = calculateTotalFrames(enabledScenes.map(s => s.timing));
 
+  // 从 scenes.json 读取背景音乐配置
+  const bgmConfig = (scenesData as any).backgroundMusic;
+  const hasBackgroundMusic = bgmConfig !== false && bgmConfig !== undefined;
+
   // 准备默认 props
-  const defaultProps: NewsVideoProps = {
+  const defaultProps: NewsVideoFullProps = {
     enabledScenes,
     totalFrames,
+    hasBackgroundMusic,
   };
 
   return (
