@@ -37,6 +37,38 @@ $env:REMOTION_CHROME_EXECUTABLE="C:\Program Files\Google\Chrome\Application\chro
 
 配置后正常运行渲染即可。
 
+## 渲染前预检查
+
+渲染前必须验证以下文件存在且有效：
+
+```bash
+# 1. scenes.json 存在且有 enabled 场景
+test -f scenes.json && cat scenes.json | python3 -c "
+import json,sys
+s=json.load(sys.stdin)
+scenes=[x for x in s.get('scenes',[]) if x.get('enabled',True)]
+assert len(scenes)>0, 'No enabled scenes'
+print(f'  ✓ scenes.json: {len(scenes)} scenes')
+"
+
+# 2. timing.json 存在且 sections 数量匹配
+test -f public/audio/timing.json && cat public/audio/timing.json | python3 -c "
+import json,sys
+t=json.load(sys.stdin)
+print(f'  ✓ timing.json: {len(t[\"sections\"])} sections, {t[\"total_duration_sec\"]:.1f}s')
+"
+
+# 3. 所有音频文件存在
+for i in 01 02 03 04 05; do
+  test -f public/audio/scene_${i}.mp3 && echo "  ✓ scene_${i}.mp3"
+done
+
+# 4. 引用的图片文件存在
+# 从 scenes.json 中提取 images 字段并检查
+```
+
+如果任何预检查失败，提示用户重新运行对应步骤（parse 或 audio）。
+
 ## 命令详解
 
 ### /briefing-video parse

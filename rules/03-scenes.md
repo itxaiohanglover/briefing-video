@@ -7,26 +7,26 @@
 interface SceneProps {
   sceneData: SceneData;      // 场景数据
   durationInFrames: number;  // 场景总帧数
+  timing?: TimingSection;    // 音频时间轴（可选）
 }
 
 // 组件模板
-const SceneXX: React.FC<SceneProps> = ({ sceneData, durationInFrames }) => {
+const SceneXX: React.FC<SceneProps> = ({ sceneData, durationInFrames, timing }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   return (
     <AbsoluteFill>
-      {/* 音频 */}
-      <Audio src={staticFile("audio/scene_XX.mp3")} />
-
       {/* 背景/图片 */}
       {/* 内容 */}
 
-      {/* 字幕 */}
-      <Subtitles
-        narration={sceneData.narration}
-        durationInFrames={durationInFrames}
-      />
+      {/* 字幕 - 使用 timing.json 精确同步 */}
+      {timing?.sentences && (
+        <TimedSubtitles
+          sentences={timing.sentences}
+          sceneStartFrame={timing.start_frame}
+        />
+      )}
     </AbsoluteFill>
   );
 };
@@ -41,8 +41,6 @@ const SceneXX: React.FC<SceneProps> = ({ sceneData, durationInFrames }) => {
 ```tsx
 // 分屏模式
 <AbsoluteFill>
-  <Audio src={staticFile("audio/scene_01.mp3")} />
-
   {/* 左侧图片 45% */}
   <SidePanelImage
     src={staticFile(`images/${sceneData.image}`)}
@@ -56,7 +54,7 @@ const SceneXX: React.FC<SceneProps> = ({ sceneData, durationInFrames }) => {
     <h1>{sceneData.title}</h1>
   </AbsoluteFill>
 
-  <Subtitles ... />
+  <TimedSubtitles ... />
 </AbsoluteFill>
 ```
 
@@ -81,8 +79,6 @@ const translateX = (progress - 0.5) * 30;
 
 ```tsx
 <AbsoluteFill style={{ background: COLORS.gradientBg }}>
-  <Audio ... />
-
   {/* 毛玻璃卡片 */}
   <div style={{
     background: 'rgba(255,255,255,0.08)',
@@ -96,7 +92,7 @@ const translateX = (progress - 0.5) * 30;
     <p style={{ fontSize: 48 }}>...</p>
   </div>
 
-  <Subtitles ... />
+  <TimedSubtitles ... />
 </AbsoluteFill>
 ```
 
@@ -129,8 +125,6 @@ const translateX = (progress - 0.5) * 30;
 
 ```tsx
 <AbsoluteFill>
-  <Audio ... />
-
   {/* 居中内容 */}
   <div style={{ textAlign: 'center' }}>
     <h1>谢谢观看</h1>
