@@ -2,13 +2,18 @@
 """
 Edge TTS 音频生成脚本
 生成 scene_01.mp3 ~ scene_05.mp3 + timing.json（按句字幕时间轴）
++ background.mp3 合成背景音乐（如不存在）
 支持断点续传，无需 API Key
 """
 
 import asyncio
 import json
+import math
 import os
+import struct
+import subprocess
 import sys
+import wave
 from pathlib import Path
 
 import edge_tts
@@ -109,6 +114,81 @@ def build_timing_json(
     }
 
 
+def generate_background_music(output_path: str, duration_sec: float = 120.0):
+    """
+    生成一段简单的合成背景音乐（柔和和弦 + 缓慢节奏）
+    输出为 WAV 然后用 ffmpeg 转为 MP3
+    如果 ffmpeg 不可用则跳过
+    """
+    sample_rate = 44100
+    num_samples = int(sample_rate * duration_sec)
+
+    # 和弦进行 (C大调 Am - F - C - G)
+    chords = [
+        [220.0, 261.63, 329.63],   # Am: A3, C4, E4
+        [174.61, 220.0, 261.63],   # F: F3, A3, C4
+        [261.63, 329.63, 392.0],   # C: C4, E4, G4
+        [196.0, 246.94, 293.66],   # G: G3, B3, D4
+    ]
+
+    samples_per_chord = int(sample_rate * 4.0)  # 每个和弦 4 秒
+    total_chord_samples = len(chords) * samples_per_chord
+
+    audio_data = []
+    for i in range(num_samples):
+        # 循环和弦
+        chord_idx = (i // samples_per_chord) % len(chords)
+        chord = chords[chord_idx]
+
+        # 在和弦内淡入淡出
+        pos_in_chord = (i % samples_per_chord) / samples_per_chord
+        envelope = min(pos_in_chord * 4, 1.0) * min((1.0 - pos_in_chord) * 4, 1.0)
+
+        # 叠加和弦中的音符
+        t = i / sample_rate
+        sample = 0.0
+        for freq in chord:
+            sample += math.sin(2 * math.pi * freq * t) * 0.15
+            # 加入轻微泛音
+            sample += math.sin(2 * math.pi * freq * 2 * t) * 0.03
+
+        # 全局淡入淡出
+        global_env = min(i / (sample_rate * 2), 1.0) * min((num_samples - i) / (sample_rate * 2), 1.0)
+
+        sample = sample * envelope * global_env * 0.5
+        audio_data.append(max(-1.0, min(1.0, sample)))
+
+    # 写入 WAV
+    wav_path = output_path + ".wav"
+    with wave.open(wav_path, "w") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(sample_rate)
+        for s in audio_data:
+            wf.writeframes(struct.pack("<h", int(s * 32767)))
+
+    # 用 ffmpeg 转 MP3
+    try:
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", wav_path, "-b:a", "64k", output_path],
+            capture_output=True,
+            check=True,
+        )
+        Path(wav_path).unlink()
+        print(f"  背景音乐: {output_path} ({duration_sec:.0f}s)")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        # ffmpeg 不可用，保留 WAV
+        try:
+            Path(output_path).unlink(missing_ok=True)
+        except Exception:
+            pass
+        try:
+            Path(wav_path).unlink(missing_ok=True)
+        except Exception:
+            pass
+        print("  背景音乐: 跳过（需要 ffmpeg）")
+
+
 async def main():
     """主函数：读取 scenes.json，生成音频 + timing.json"""
     scenes_path = Path("scenes.json")
@@ -186,6 +266,12 @@ async def main():
     print(f"timing.json: {timing_path}")
     print(f"总时长: {timing_data['total_duration_sec']}s ({timing_data['total_frames']} 帧)")
     print(f"{'='*50}")
+
+    # 生成背景音乐（如不存在）
+    bgm_path = audio_dir / "background.mp3"
+    if not bgm_path.exists():
+        print("\n生成背景音乐...")
+        generate_background_music(str(bgm_path), duration_sec=120.0)
 
     if fail_count > 0:
         sys.exit(1)
