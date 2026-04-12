@@ -157,19 +157,19 @@ export function generateSceneData(mdFile: MarkdownFile): ParsedScene {
 function extractMetrics(text: string): { label: string; value: number; suffix: string }[] {
   const metrics: { label: string; value: number; suffix: string }[] = [];
 
-  // 匹配模式：数字+单位
+  // 匹配模式：数字+单位（支持小数如 16.6万）
   const patterns = [
-    { regex: /(\d+)亿/g, suffix: '亿元' },
-    { regex: /(\d+)万/g, suffix: '万' },
-    { regex: /(\d+)%/g, suffix: '%' },
-    { regex: /(\d+)家/g, suffix: '家' },
-    { regex: /(\d+)人/g, suffix: '人' }
+    { regex: /(\d+(?:\.\d+)?)亿/g, suffix: '亿元' },
+    { regex: /(\d+(?:\.\d+)?)万/g, suffix: '万' },
+    { regex: /(\d+(?:\.\d+)?)%/g, suffix: '%' },
+    { regex: /(\d+(?:\.\d+)?)家/g, suffix: '家' },
+    { regex: /(\d+(?:\.\d+)?)人/g, suffix: '人' }
   ];
 
   for (const { regex, suffix } of patterns) {
     let match;
     while ((match = regex.exec(text)) !== null) {
-      const value = parseInt(match[1], 10);
+      const value = parseFloat(match[1]);
       // 简单提取上下文作为 label
       const contextStart = Math.max(0, match.index - 15);
       const context = text.slice(contextStart, match.index).trim();

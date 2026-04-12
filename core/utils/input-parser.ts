@@ -86,7 +86,7 @@ function splitIntoScenes(
 
   // Scene 4: Dashboard - 找包含数字的段落
   const dashboardParagraph = paragraphs.find(p =>
-    /\d+[%亿元万]/.test(p) && p.length > 30
+    /\d+(?:\.\d+)?[%亿元万]/.test(p) && p.length > 30
   ) || paragraphs[Math.min(6, paragraphs.length - 1)] || '';
 
   // 提取数字指标
@@ -119,16 +119,16 @@ function extractNumbers(text: string): { label: string; value: number; suffix: s
   const numbers: { label: string; value: number; suffix: string }[] = [];
 
   const patterns = [
-    { regex: /(\d+)亿/g, suffix: '亿元' },
-    { regex: /(\d+)万/g, suffix: '万' },
-    { regex: /(\d+)%/g, suffix: '%' },
-    { regex: /(\d+)家/g, suffix: '家' }
+    { regex: /(\d+(?:\.\d+)?)亿/g, suffix: '亿元' },
+    { regex: /(\d+(?:\.\d+)?)万/g, suffix: '万' },
+    { regex: /(\d+(?:\.\d+)?)%/g, suffix: '%' },
+    { regex: /(\d+(?:\.\d+)?)家/g, suffix: '家' }
   ];
 
   for (const { regex, suffix } of patterns) {
     let match;
     while ((match = regex.exec(text)) !== null) {
-      const value = parseInt(match[1], 10);
+      const value = parseFloat(match[1]);
       const contextStart = Math.max(0, match.index - 15);
       const context = text.slice(contextStart, match.index).trim();
       const label = context.slice(-6).replace(/[：:]/, '') || '数据';

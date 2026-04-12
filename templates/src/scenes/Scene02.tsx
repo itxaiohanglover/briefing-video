@@ -1,21 +1,6 @@
 import { useVideoConfig, useCurrentFrame, staticFile, interpolate } from "remotion";
-import { Audio } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
-import { SceneData } from "../types";
-
-interface SentenceTiming {
-  text: string;
-  start_frame: number;
-  end_frame: number;
-}
-
-interface TimingSection {
-  name: string;
-  start_frame: number;
-  end_frame: number;
-  duration_frames: number;
-  sentences: SentenceTiming[];
-}
+import { SceneData, TimingSection } from "../types";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -94,7 +79,6 @@ export const Scene02: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
             width: "100%",
             height: "100%",
             opacity: index === currentImageIndex ? opacity : 0,
-            transition: "opacity 0.3s ease",
           }}
         >
           <img
@@ -105,7 +89,6 @@ export const Scene02: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
               height: "100%",
               objectFit: "cover",
               transform: `scale(${index === currentImageIndex ? scale : 1}) translate(${index === currentImageIndex ? translateX : 0}px, ${index === currentImageIndex ? translateY : 0}px)`,
-              transition: "transform 0.1s linear",
             }}
           />
           {/* 暗角效果 */}

@@ -1,5 +1,5 @@
 import { staticFile, interpolate, useVideoConfig } from "remotion";
-import { Audio } from "@remotion/media";
+import { Audio } from "remotion";
 
 interface BackgroundMusicProps {
   src: string;

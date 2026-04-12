@@ -153,13 +153,14 @@ export const RemotionRoot: React.FC = () => {
   const { scenes } = scenesData;
   const { sections } = timingData;
 
-  // 匹配场景和时序数据
+  // 匹配场景和时序数据（按 type/label 匹配，而非索引）
   const enabledScenes: EnabledSceneItem[] = scenes
     .map((scene, index) => {
-      const type = SCENE_TYPES[index];
-      const timing = sections[index];
+      const type = scene.type as string;
+      // 优先按 scene.id 匹配 timing section name，再按 type 匹配 label
+      const timing = sections.find(s => s.name === scene.id)
+        || sections.find(s => s.label === type);
 
-      // 如果没有时序数据或场景被禁用，跳过
       if (!timing || !scene.enabled) return null;
 
       return { scene, type, index, timing };

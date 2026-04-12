@@ -1,22 +1,7 @@
 import React from "react";
-import { useVideoConfig, useCurrentFrame, staticFile, interpolate } from "remotion";
-import { Audio } from "remotion";
+import { useVideoConfig, useCurrentFrame, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
-import { SceneData } from "../types";
-
-interface SentenceTiming {
-  text: string;
-  start_frame: number;
-  end_frame: number;
-}
-
-interface TimingSection {
-  name: string;
-  start_frame: number;
-  end_frame: number;
-  duration_frames: number;
-  sentences: SentenceTiming[];
-}
+import { SceneData, TimingSection } from "../types";
 
 interface SceneProps {
   sceneData: SceneData;

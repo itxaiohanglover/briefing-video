@@ -70,8 +70,8 @@ export const AudioWaveform: React.FC<AudioWaveformProps> = ({
       const wave2 = Math.sin(frameNum * 0.15 + i * 0.5) * 0.5;
       const wave3 = Math.cos(frameNum * 0.08 + i * 0.2) * 0.3;
 
-      // 添加随机波动
-      const noise = (Math.random() - 0.5) * 0.2;
+      // 确定性伪随机（基于帧号和索引，保证每帧渲染一致）
+      const noise = (Math.sin(frameNum * 12.9898 + i * 78.233) * 43758.5453 % 1 - 0.5) * 0.2;
 
       // 归一化到 0-1
       const value = Math.max(0, Math.min(1, (wave1 + wave2 + wave3 + noise + 1.5) / 3));

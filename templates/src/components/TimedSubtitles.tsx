@@ -1,10 +1,5 @@
 import { useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-
-interface SentenceTiming {
-  text: string;
-  start_frame: number;
-  end_frame: number;
-}
+import { SentenceTiming } from "../types";
 
 interface TimedSubtitlesProps {
   /**

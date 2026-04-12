@@ -1,21 +1,6 @@
-import { useVideoConfig, useCurrentFrame, staticFile, interpolate } from "remotion";
-import { Audio } from "remotion";
+import { useVideoConfig, useCurrentFrame, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
-import { SceneData } from "../types";
-
-interface SentenceTiming {
-  text: string;
-  start_frame: number;
-  end_frame: number;
-}
-
-interface TimingSection {
-  name: string;
-  start_frame: number;
-  end_frame: number;
-  duration_frames: number;
-  sentences: SentenceTiming[];
-}
+import { SceneData, TimingSection } from "../types";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -189,7 +174,6 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
                 borderRadius: "50%",
                 background: "#e94560",
                 transform: `scale(${frame > i * 10 ? dotScale : 0})`,
-                transition: "transform 0.3s ease",
                 opacity: frame > i * 10 ? 1 : 0,
               }}
             />
@@ -285,7 +269,7 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
             zIndex: 10,
           }}
         >
-          {new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
+          --:--
         </div>
       </div>
 
