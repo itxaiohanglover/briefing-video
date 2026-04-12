@@ -37,16 +37,21 @@ if (存在 package.json 或 scenes.json):
     └── components/
         ├── index.ts
         ├── TimedSubtitles.tsx
-        ├── AudioWaveform.tsx
         ├── BackgroundMusic.tsx
         ├── BackgroundPhoto.tsx
         └── SidePanelImage.tsx
+
+从 ~/.claude/skills/briefing-video/scripts/ 复制：
+└── generate_audio.py         → scripts/generate_audio.py
+
+从 ~/.claude/skills/briefing-video/templates/public/ 复制：
+└── audio/background.mp3      → public/audio/background.mp3（默认背景音乐）
 ```
 
 ### Step 3: 创建用户目录
 
 ```bash
-mkdir -p input/ content/ images/ public/audio out/
+mkdir -p input/ content/ images/ public/audio out/ scripts/
 ```
 
 ### Step 4: 创建示例输入文件
@@ -109,8 +114,11 @@ my-project/
 │   ├── 04-dashboard.md
 │   └── 05-outro.md
 ├── images/            # 【放入】配图素材
+├── scripts/
+│   └── generate_audio.py  # Edge TTS 音频生成脚本
 ├── public/
-│   └── audio/         # 自动生成
+│   └── audio/
+│       └── background.mp3  # 默认背景音乐（用户可替换）
 ├── src/
 │   ├── scenes/        # 场景组件
 │   ├── components/    # 共享组件

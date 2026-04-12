@@ -2,6 +2,7 @@ import React from "react";
 import { useVideoConfig, useCurrentFrame, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
 import { SceneData, TimingSection } from "../types";
+import { COLORS } from "../colors";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -19,7 +20,7 @@ interface DataCard {
 }
 
 // 默认配色
-const DEFAULT_COLORS = ["#e94560", "#00d9ff", "#f9a825", "#00e676"];
+const DEFAULT_COLORS = COLORS.cardColors;
 
 export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, timing }) => {
   const { fps, width, height } = useVideoConfig();
@@ -66,13 +67,13 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
     );
 
     const animatedValue = Math.floor(card.value * numberProgress);
-    const cardColor = card.color || "#e94560";
+    const cardColor = card.color || COLORS.accent;
 
     return (
       <div
         key={index}
         style={{
-          background: "rgba(255,255,255,0.06)",
+          background: COLORS.surface,
           backdropFilter: "blur(16px)",
           borderRadius: "16px",
           padding: "32px",
@@ -88,7 +89,7 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         {/* 标签 */}
         <span
           style={{
-            color: "rgba(255,255,255,0.6)",
+            color: COLORS.textMuted,
             fontSize: "26px",
             marginBottom: "12px",
             letterSpacing: "2px",
@@ -160,8 +161,8 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
                     height: "40px",
                     borderRadius: "50%",
                     background: nodeProgress > 0.5
-                      ? "linear-gradient(135deg, #e94560, #c73e54)"
-                      : "rgba(255,255,255,0.2)",
+                      ? `linear-gradient(135deg, ${COLORS.accent}, #c73e54)`
+                      : COLORS.surfaceLight,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -169,12 +170,12 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
                 >
                   <span style={{ fontSize: "18px" }}>{node.icon || "●"}</span>
                 </div>
-                <span style={{ color: "#fff", fontSize: "18px", whiteSpace: "nowrap" }}>
+                <span style={{ color: COLORS.textPrimary, fontSize: "18px", whiteSpace: "nowrap" }}>
                   {node.label}
                 </span>
               </div>
               {index < chainNodes.length - 1 && (
-                <div style={{ width: "30px", height: "2px", background: "rgba(255,255,255,0.2)", marginTop: "-20px" }} />
+                <div style={{ width: "30px", height: "2px", background: COLORS.surfaceLight, marginTop: "-20px" }} />
               )}
             </React.Fragment>
           );
@@ -188,7 +189,7 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
       style={{
         width: "100%",
         height: "100%",
-        background: "linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%)",
+        background: COLORS.bgDashboard,
         position: "relative",
         display: "flex",
         flexDirection: "column",
@@ -202,7 +203,7 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           style={{
             display: "inline-block",
             background: "rgba(233, 69, 96, 0.9)",
-            color: "white",
+            color: COLORS.textPrimary,
             padding: "10px 24px",
             borderRadius: "4px",
             fontSize: "22px",

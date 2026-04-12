@@ -1,6 +1,7 @@
 import { useVideoConfig, useCurrentFrame, staticFile, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
 import { SceneData, TimingSection } from "../types";
+import { COLORS } from "../colors";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -62,7 +63,7 @@ export const Scene02: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
       style={{
         width: "100%",
         height: "100%",
-        background: "#000",
+        background: COLORS.bgSlideshow,
         position: "relative",
         overflow: "hidden",
       }}
@@ -99,7 +100,7 @@ export const Scene02: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
               left: 0,
               width: "100%",
               height: "100%",
-              background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)",
+              background: COLORS.overlayVignette,
               pointerEvents: "none",
             }}
           />
@@ -114,24 +115,24 @@ export const Scene02: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
             bottom: "140px",
             left: "50%",
             transform: "translateX(-50%)",
-            background: "rgba(255,255,255,0.12)",
+            background: COLORS.surfaceLight,
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             padding: "20px 48px",
             borderRadius: "16px",
             maxWidth: "80%",
-            border: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+            border: `1px solid ${COLORS.borderLight}`,
+            boxShadow: COLORS.shadowCaption,
           }}
         >
           <p
             style={{
-              color: "white",
+              color: COLORS.textPrimary,
               fontSize: "40px",
               margin: 0,
               textAlign: "center",
               fontWeight: 600,
-              textShadow: "0 2px 10px rgba(0,0,0,0.5)",
+              textShadow: COLORS.shadowText,
               letterSpacing: "1px",
             }}
           >

@@ -122,8 +122,7 @@ public/audio/
 
 ```bash
 # 使用本地 Chrome（避免下载 ~400MB Chromium）
-export REMOTION_CHROME_EXECUTABLE="C:/Program Files/Google/Chrome/Application/chrome.exe"
-
+# 已在 remotion.config.ts 中配置 Config.setBrowserExecutable()
 npx remotion render src/index.ts NewsVideo out/video.mp4
 ```
 
@@ -175,5 +174,5 @@ npx remotion render src/index.ts NewsVideo out/video.mp4
 | 音频生成失败 | edge-tts 安装 | `pip install edge-tts` |
 | 音画不同步 | timing.json | 删除后重新运行 generate_audio.py |
 | 图片不显示 | opacity 设置 | 确保 ≥ 0.4 |
-| 渲染下载 Chromium | REMOTION_CHROME_EXECUTABLE | 设置本地 Chrome 路径 |
+| 渲染下载 Chromium | remotion.config.ts | 配置 Config.setBrowserExecutable() 指向本地 Chrome |
 | 渲染失败 | 依赖安装 | `npm install` |

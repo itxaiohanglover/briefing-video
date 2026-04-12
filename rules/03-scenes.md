@@ -121,7 +121,7 @@ const translateX = (progress - 0.5) * 30;
 
 ### Scene05 - Outro（结尾）
 
-**特点**：底部新闻条滚动
+**特点**：居中标题 + 装饰动画
 
 ```tsx
 <AbsoluteFill>
@@ -131,8 +131,8 @@ const translateX = (progress - 0.5) * 30;
     <p>{sceneData.title}</p>
   </div>
 
-  {/* 底部新闻条 */}
-  <NewsTicker />
+  {/* 字幕 */}
+  <TimedSubtitles ... />
 </AbsoluteFill>
 ```
 
@@ -179,14 +179,41 @@ const currentValue = interpolate(
 
 ## 字幕规范
 
+所有场景使用 `TimedSubtitles` 组件，基于 `timing.json` 精确同步：
+
 ```tsx
-<Subtitles
-  narration={sceneData.narration}
-  durationInFrames={durationInFrames}
-  highlightCurrent={true}  // 高亮当前句
-/>
+{/* 字幕 - 使用 timing.json 精确同步 */}
+{timing?.sentences && (
+  <TimedSubtitles
+    sentences={timing.sentences}
+    sceneStartFrame={timing.start_frame}
+  />
+)}
 ```
 
-- 背景透明度：0.20
-- 按标点切分：。！？
-- 均匀分配：总帧数 / 句子数
+**关键**：`sentences[].start_frame` 是场景内的相对帧，Remotion 的 `useCurrentFrame()` 在每个 Sequence 中也从 0 开始，所以直接用 `frame` 匹配即可。
+
+### timing.json 结构
+
+```json
+{
+  "fps": 30,
+  "total_frames": 1230,
+  "sections": [
+    {
+      "name": "scene_01",
+      "start_frame": 0,
+      "end_frame": 195,
+      "duration_frames": 195,
+      "label": "intro",
+      "sentences": [
+        { "text": "当2026年的春天...", "start_frame": 0, "end_frame": 95 }
+      ]
+    }
+  ]
+}
+```
+
+- 由 `scripts/generate_audio.py` 自动生成（通过 Edge TTS 的 SentenceBoundary）
+- 每个场景的 sentences 的 start_frame 是**场景内相对帧**，不是绝对帧
+- 样式支持 `default`（粉红背景条）、`breaking`（白底红字）、`quote`（暗底蓝条）

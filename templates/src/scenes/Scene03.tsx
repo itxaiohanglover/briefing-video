@@ -1,6 +1,7 @@
 import { useVideoConfig, useCurrentFrame, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
 import { SceneData, TimingSection } from "../types";
+import { COLORS } from "../colors";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -61,7 +62,7 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
       style={{
         width: "100%",
         height: "100%",
-        background: "linear-gradient(180deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%)",
+        background: COLORS.bgSubtitle,
         position: "relative",
         display: "flex",
         flexDirection: "column",
@@ -102,15 +103,15 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
       >
         <div
           style={{
-            background: "#e94560",
+            background: COLORS.accent,
             padding: "12px 24px",
             borderRadius: "4px",
-            boxShadow: "0 4px 15px rgba(233, 69, 96, 0.4)",
+            boxShadow: COLORS.shadowLabel,
           }}
         >
           <span
             style={{
-              color: "white",
+              color: COLORS.textPrimary,
               fontSize: "40px",
               fontWeight: "bold",
               letterSpacing: "3px",
@@ -126,13 +127,13 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         style={{
           width: "100%",
           maxWidth: "900px",
-          background: "rgba(255,255,255,0.08)",
+          background: COLORS.surface,
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           borderRadius: "24px",
           padding: "60px",
-          border: "1px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 25px 50px rgba(0,0,0,0.3)",
+          border: `1px solid ${COLORS.borderFaint}`,
+          boxShadow: COLORS.shadowCard,
           opacity: containerOpacity,
           transform: `scale(${containerScale})`,
         }}
@@ -141,7 +142,7 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         <div
           style={{
             fontSize: "120px",
-            color: "rgba(233, 69, 96, 0.3)",
+            color: COLORS.accentLight,
             lineHeight: 0.5,
             marginBottom: "20px",
             fontFamily: "Georgia, serif",
@@ -153,7 +154,7 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         {/* 字幕内容 */}
         <div
           style={{
-            color: "white",
+            color: COLORS.textPrimary,
             fontSize: "56px",
             lineHeight: 1.6,
             fontWeight: 600,
@@ -184,7 +185,7 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
                   margin: "16px 0",
                   opacity: lineOpacity,
                   transform: `translateY(${lineY}px)`,
-                  color: isHighlight ? "#e94560" : "white",
+                  color: isHighlight ? COLORS.accent : COLORS.textPrimary,
                   textShadow: isHighlight
                     ? `0 0 ${20 * highlightPulse}px rgba(233, 69, 96, 0.5)`
                     : "none",
@@ -200,7 +201,7 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         <div
           style={{
             fontSize: "120px",
-            color: "rgba(233, 69, 96, 0.3)",
+            color: COLORS.accentLight,
             lineHeight: 0.5,
             marginTop: "20px",
             textAlign: "right",
@@ -218,7 +219,7 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           bottom: "100px",
           width: "200px",
           height: "4px",
-          background: "linear-gradient(90deg, transparent, #e94560, transparent)",
+          background: `linear-gradient(90deg, transparent, ${COLORS.accent}, transparent)`,
           opacity: containerOpacity,
         }}
       />

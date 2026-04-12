@@ -1,6 +1,7 @@
 import { useVideoConfig, useCurrentFrame, staticFile, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
 import { SceneData, TimingSection } from "../types";
+import { COLORS } from "../colors";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -20,19 +21,19 @@ export const Scene01: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
     { extrapolateRight: "clamp" }
   );
 
-  // 入场动画 - 右侧标题滑入
-  const titleX = interpolate(
+  // 标题淡入（不需要水平滑动）
+  const titleOpacity = interpolate(
     frame,
-    [10, 40],
-    [width * 0.3, 0],
+    [10, 35],
+    [0, 1],
     { extrapolateRight: "clamp" }
   );
 
-  // 标题透明度
-  const titleOpacity = interpolate(
+  // 标题轻微上浮效果
+  const titleY = interpolate(
     frame,
-    [10, 40],
-    [0, 1],
+    [10, 35],
+    [20, 0],
     { extrapolateRight: "clamp" }
   );
 
@@ -58,7 +59,7 @@ export const Scene01: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
       style={{
         width: "100%",
         height: "100%",
-        background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+        background: COLORS.bgIntro,
         position: "relative",
         overflow: "hidden",
         display: "flex",
@@ -115,15 +116,15 @@ export const Scene01: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         {/* 新闻标签 */}
         <div
           style={{
-            transform: `translateX(${titleX}px)`,
+            transform: `translateY(${titleY}px)`,
             opacity: titleOpacity,
           }}
         >
           <span
             style={{
               display: "inline-block",
-              background: "#e94560",
-              color: "white",
+              background: COLORS.accent,
+              color: COLORS.textPrimary,
               padding: "8px 20px",
               borderRadius: "4px",
               fontSize: "32px",
@@ -141,10 +142,10 @@ export const Scene01: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           style={{
             fontSize: "84px",
             fontWeight: "bold",
-            color: "white",
+            color: COLORS.textPrimary,
             margin: 0,
             lineHeight: 1.2,
-            transform: `translateX(${titleX}px)`,
+            transform: `translateY(${titleY}px)`,
             opacity: titleOpacity,
             textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
           }}
@@ -157,7 +158,7 @@ export const Scene01: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           <p
             style={{
               fontSize: "36px",
-              color: "rgba(255,255,255,0.8)",
+              color: COLORS.textSecondary,
               marginTop: "30px",
               lineHeight: 1.5,
               transform: `translateY(${subtitleY}px)`,

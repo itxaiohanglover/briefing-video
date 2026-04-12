@@ -13,7 +13,6 @@ import {
 } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { BackgroundMusic } from "./components/BackgroundMusic";
-import { AudioWaveform } from "./components/AudioWaveform";
 import type { SceneData } from "./types";
 
 // 导入配置文件
@@ -106,17 +105,6 @@ const NewsVideo: React.FC<NewsVideoFullProps> = ({
           volume={0.2}
         />
       )}
-
-      {/* 音频波形可视化 */}
-      <AudioWaveform
-        mode="bars"
-        position="bottom"
-        barCount={32}
-        height={40}
-        opacity={0.2}
-        color="#e94560"
-        animated={true}
-      />
 
       {/* 场景序列（带过渡） */}
       <TransitionSeries>

@@ -1,62 +1,41 @@
-// 配色常量 - 新闻风格
+// 配色常量 - 新闻简报风格
+// 基于深蓝暗色系 + 红粉强调色
 
 export const COLORS = {
-  // 背景
-  bgPrimary: '#0a0a0f',
-  bgSecondary: '#1a1a2e',
-  gradientBg: 'linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%)',
+  // 背景渐变
+  bgIntro: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+  bgSubtitle: 'linear-gradient(180deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%)',
+  bgDashboard: 'linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%)',
+  bgOutro: 'linear-gradient(180deg, #0d1b2a 0%, #1b263b 50%, #0d1b2a 100%)',
+  bgSlideshow: '#000000',
 
   // 文字
   textPrimary: '#ffffff',
-  textSecondary: '#a0a8c0',
-  textMuted: '#6b7280',
+  textSecondary: 'rgba(255,255,255,0.8)',
+  textMuted: 'rgba(255,255,255,0.6)',
 
   // 强调色
-  accent: '#007AFF',
-  highlight: '#FF3B30',
-  success: '#34C759',
-  warning: '#FF9500',
+  accent: '#e94560',
+  accentLight: 'rgba(233, 69, 96, 0.3)',
+  accentGlow: 'rgba(233, 69, 96, 0.15)',
+  accentBoxShadow: 'rgba(233, 69, 96, 0.4)',
 
-  // 卡片/表面
+  // 数据卡片色
+  cardColors: ['#e94560', '#00d9ff', '#f9a825', '#00e676'] as const,
+
+  // 表面/卡片
   surface: 'rgba(255, 255, 255, 0.08)',
-  surfaceHover: 'rgba(255, 255, 255, 0.12)',
-
-  // 边框
-  border: 'rgba(255, 255, 255, 0.15)',
+  surfaceLight: 'rgba(255,255,255,0.12)',
+  borderLight: 'rgba(255,255,255,0.15)',
+  borderFaint: 'rgba(255,255,255,0.1)',
 
   // 遮罩
-  overlay: 'rgba(5, 5, 16, 0.40)',
-  overlayStrong: 'rgba(5, 5, 16, 0.72)',
+  overlayVignette: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
+  gradientBlend: (color: string) => `linear-gradient(to right, transparent, ${color})`,
 
   // 阴影
-  shadow: '0 25px 50px rgba(0, 0, 0, 0.4)',
-  shadowLight: '0 4px 20px rgba(0, 0, 0, 0.3)',
-} as const;
-
-// 场景特定配色
-export const SCENE_COLORS = {
-  intro: {
-    title: COLORS.textPrimary,
-    subtitle: COLORS.textSecondary,
-    accent: COLORS.highlight,
-  },
-  slideshow: {
-    caption: COLORS.textPrimary,
-    overlay: COLORS.overlay,
-  },
-  subtitle: {
-    text: COLORS.textPrimary,
-    badge: COLORS.highlight,
-    background: 'rgba(0, 0, 0, 0.20)',
-  },
-  dashboard: {
-    number: COLORS.accent,
-    label: COLORS.textSecondary,
-    cardBg: COLORS.surface,
-  },
-  outro: {
-    title: COLORS.textPrimary,
-    subtitle: COLORS.textSecondary,
-    ticker: COLORS.highlight,
-  },
+  shadowCard: '0 25px 50px rgba(0,0,0,0.3)',
+  shadowLabel: '0 4px 15px rgba(233, 69, 96, 0.4)',
+  shadowCaption: '0 8px 32px rgba(0,0,0,0.3)',
+  shadowText: '0 2px 10px rgba(0,0,0,0.5)',
 } as const;

@@ -1,6 +1,7 @@
 import { useVideoConfig, useCurrentFrame, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
 import { SceneData, TimingSection } from "../types";
+import { COLORS } from "../colors";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -9,10 +10,10 @@ interface SceneProps {
 }
 
 export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, timing }) => {
-  const { fps, width, height } = useVideoConfig();
+  const { fps } = useVideoConfig();
   const frame = useCurrentFrame();
 
-  const { title, subtitle, newsTicker } = sceneData;
+  const { title, subtitle } = sceneData;
 
   // 主标题入场动画
   const titleScale = interpolate(
@@ -52,14 +53,6 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
     { extrapolateRight: "clamp" }
   );
 
-  // 新闻条滚动动画
-  const tickerX = interpolate(
-    frame,
-    [0, durationInFrames],
-    [width, -width],
-    { extrapolateRight: "clamp" }
-  );
-
   // 结束提示点动画
   const dotScale = interpolate(
     frame % 30,
@@ -73,7 +66,7 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
       style={{
         width: "100%",
         height: "100%",
-        background: "linear-gradient(180deg, #0d1b2a 0%, #1b263b 50%, #0d1b2a 100%)",
+        background: COLORS.bgOutro,
         position: "relative",
         display: "flex",
         flexDirection: "column",
@@ -92,7 +85,7 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           transform: "translate(-50%, -50%)",
           width: "600px",
           height: "600px",
-          background: "radial-gradient(circle, rgba(233, 69, 96, 0.15) 0%, transparent 70%)",
+          background: `radial-gradient(circle, ${COLORS.accentGlow} 0%, transparent 70%)`,
           borderRadius: "50%",
           opacity: decorOpacity,
         }}
@@ -123,7 +116,7 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           style={{
             fontSize: "84px",
             fontWeight: "bold",
-            color: "white",
+            color: COLORS.textPrimary,
             margin: 0,
             marginBottom: "20px",
             textShadow: "0 4px 20px rgba(0,0,0,0.3)",
@@ -136,7 +129,7 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         <p
           style={{
             fontSize: "40px",
-            color: "rgba(255,255,255,0.7)",
+            color: COLORS.textSecondary,
             margin: 0,
             transform: `translateY(${subtitleY}px)`,
             opacity: subtitleOpacity,
@@ -150,7 +143,7 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           style={{
             width: "100px",
             height: "4px",
-            background: "linear-gradient(90deg, transparent, #e94560, transparent)",
+            background: `linear-gradient(90deg, transparent, ${COLORS.accent}, transparent)`,
             margin: "40px auto",
             opacity: decorOpacity,
           }}
@@ -172,7 +165,7 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
                 width: "12px",
                 height: "12px",
                 borderRadius: "50%",
-                background: "#e94560",
+                background: COLORS.accent,
                 transform: `scale(${frame > i * 10 ? dotScale : 0})`,
                 opacity: frame > i * 10 ? 1 : 0,
               }}
@@ -181,104 +174,11 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         </div>
       </div>
 
-      {/* 底部新闻条 */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: "80px",
-          background: "rgba(233, 69, 96, 0.95)",
-          display: "flex",
-          alignItems: "center",
-          overflow: "hidden",
-        }}
-      >
-        {/* 新闻标签 */}
-        <div
-          style={{
-            background: "#0d1b2a",
-            color: "white",
-            padding: "0 30px",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            fontSize: "32px",
-            fontWeight: "bold",
-            letterSpacing: "2px",
-            zIndex: 10,
-          }}
-        >
-          BREAKING
-        </div>
-
-        {/* 滚动新闻内容 */}
-        <div
-          style={{
-            flex: 1,
-            overflow: "hidden",
-            position: "relative",
-            height: "100%",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              whiteSpace: "nowrap",
-              transform: `translateX(${tickerX}px)`,
-            }}
-          >
-            <span
-              style={{
-                color: "white",
-                fontSize: "32px",
-                paddingRight: "100px",
-              }}
-            >
-              {newsTicker || "感谢收看本期新闻 • 订阅获取更多资讯 • THANKS FOR WATCHING • SUBSCRIBE FOR MORE"}
-            </span>
-            <span
-              style={{
-                color: "white",
-                fontSize: "32px",
-                paddingRight: "100px",
-              }}
-            >
-              {newsTicker || "感谢收看本期新闻 • 订阅获取更多资讯 • THANKS FOR WATCHING • SUBSCRIBE FOR MORE"}
-            </span>
-          </div>
-        </div>
-
-        {/* 时间显示 */}
-        <div
-          style={{
-            background: "#0d1b2a",
-            color: "white",
-            padding: "0 30px",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            fontSize: "32px",
-            fontFamily: "monospace",
-            zIndex: 10,
-          }}
-        >
-          --:--
-        </div>
-      </div>
-
       {/* 字幕 - 使用 timing.json 精确同步 */}
       {timing?.sentences && (
         <TimedSubtitles
           sentences={timing.sentences}
           sceneStartFrame={timing.start_frame}
-          style="quote"
         />
       )}
     </div>

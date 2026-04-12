@@ -19,6 +19,23 @@ VOICE = os.environ.get("EDGE_TTS_VOICE", DEFAULT_VOICE)
 RATE = os.environ.get("EDGE_TTS_RATE", "+0%")
 FPS = 30
 
+# 需要从 narration 中移除的字符（会导致 edge-tts 失败）
+TTS_CHAR_REPLACEMENTS = {
+    "\u201c": "",   # " 左双引号
+    "\u201d": "",   # " 右双引号
+    "\u2018": "",   # ' 左单引号
+    "\u2019": "",   # ' 右单引号
+    "\u300a": "《",  # 〈 左书名号 → 《
+    "\u300b": "》",  # 〉 右书名号 → 》
+}
+
+
+def preprocess_text_for_tts(text: str) -> str:
+    """预处理文本，移除/替换 edge-tts 无法处理的字符"""
+    for char, replacement in TTS_CHAR_REPLACEMENTS.items():
+        text = text.replace(char, replacement)
+    return text
+
 
 async def generate_scene_audio(
     text: str, output_path: str, voice: str, rate: str
@@ -142,6 +159,9 @@ async def main():
         if not narration:
             print(f"[{i}/{len(scenes)}] {scene_id}: 无旁白文本，跳过")
             continue
+
+        # 预处理文本（移除 edge-tts 不兼容的字符）
+        narration = preprocess_text_for_tts(narration)
 
         output_path = audio_dir / f"{scene_id}.mp3"
 

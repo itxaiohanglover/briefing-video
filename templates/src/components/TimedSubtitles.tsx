@@ -27,6 +27,10 @@ interface TimedSubtitlesProps {
 /**
  * 基于 timing.json 精确同步的字幕组件
  * 根据音频时间轴精确显示每句字幕
+ *
+ * 注意：sentences 的 start_frame/end_frame 是场景内的相对帧数，
+ * 而 Remotion 的 useCurrentFrame() 在每个 Sequence 中也是从 0 开始，
+ * 所以直接用 frame 匹配即可，不需要加 sceneStartFrame 偏移。
  */
 export const TimedSubtitles: React.FC<TimedSubtitlesProps> = ({
   sentences,
@@ -38,12 +42,9 @@ export const TimedSubtitles: React.FC<TimedSubtitlesProps> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // 计算当前绝对帧
-  const absoluteFrame = frame + sceneStartFrame;
-
-  // 查找当前应该显示的句子
+  // 直接用当前帧匹配句子（sentences 的 start_frame 是场景内的相对帧）
   const currentSentenceData = sentences.find(
-    (s) => absoluteFrame >= s.start_frame && absoluteFrame < s.end_frame
+    (s) => frame >= s.start_frame && frame < s.end_frame
   );
 
   // 如果没有匹配的句子，不显示
@@ -55,7 +56,7 @@ export const TimedSubtitles: React.FC<TimedSubtitlesProps> = ({
 
   // 计算在当前句子内的进度（用于入场动画）
   const sentenceProgress =
-    (absoluteFrame - currentSentenceData.start_frame) /
+    (frame - currentSentenceData.start_frame) /
     (currentSentenceData.end_frame - currentSentenceData.start_frame);
 
   // 入场动画（前 15% 的时间淡入）
