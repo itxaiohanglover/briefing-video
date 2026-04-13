@@ -102,7 +102,6 @@ const NewsVideo: React.FC<NewsVideoFullProps> = ({
         <BackgroundMusic
           src="audio/background.mp3"
           videoDurationInFrames={totalFrames}
-          volume={0.2}
         />
       )}
 

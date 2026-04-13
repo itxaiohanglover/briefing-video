@@ -15,12 +15,55 @@ export interface MetricData {
   suffix?: string;
   prefix?: string;
   color?: string;
+  // 历史数据（用于迷你曲线图）
+  history?: number[];
+  // 图表类型（可选，覆盖默认类型）
+  chartType?: 'bar' | 'line' | 'gauge' | 'number';
 }
 
 export interface ChainNode {
   id: string;
   label: string;
   icon?: string;
+}
+
+// 图表数据类型
+export interface BarChartData {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+export interface LineChartData {
+  label: string;
+  data: number[];
+  color?: string;
+}
+
+export interface GaugeData {
+  label: string;
+  value: number; // 0-100
+  suffix?: string;
+}
+
+// 关键词卡片数据
+export interface KeywordCard {
+  text: string;
+  color?: string;
+}
+
+// 时间轴步骤数据
+export interface TimelineStep {
+  label: string;
+  completed: boolean;
+  description?: string;
+}
+
+// 数据高亮框数据
+export interface HighlightBox {
+  value: string;
+  label: string;
+  color?: string;
 }
 
 export interface SceneData {
@@ -58,6 +101,16 @@ export interface SceneData {
   // 字幕内容
   content?: string;
   highlight?: string;
+
+  // Scene03 增强：关键词、时间轴、高亮框
+  keywords?: KeywordCard[];
+  timeline?: TimelineStep[];
+  highlightBox?: HighlightBox;
+
+  // Scene04 增强：图表数据
+  barChart?: BarChartData[];
+  lineChart?: LineChartData;
+  gaugeChart?: GaugeData;
 }
 
 export interface VideoConfig {

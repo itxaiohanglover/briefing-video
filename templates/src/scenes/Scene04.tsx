@@ -3,6 +3,9 @@ import { useVideoConfig, useCurrentFrame, interpolate } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
 import { SceneData, TimingSection } from "../types";
 import { COLORS } from "../colors";
+import { BarChart } from "../components/BarChart";
+import { LineChart } from "../components/LineChart";
+import { GaugeChart } from "../components/GaugeChart";
 
 interface SceneProps {
   sceneData: SceneData;
@@ -41,10 +44,10 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
     color: m.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
   }));
 
-  // 标题入场
-  const titleOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
+  // 入场动画
+  const containerOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
 
-  // 渲染数据卡片 - 简洁淡入动画
+  // 渲染数据卡片 - 超紧凑版（最小高度）
   const renderDataCard = (card: DataCard, index: number) => {
     const delay = index * 8;
 
@@ -73,42 +76,43 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         style={{
           background: COLORS.surface,
           backdropFilter: "blur(16px)",
-          borderRadius: "16px",
-          padding: "32px",
+          borderRadius: "12px",
+          padding: "12px 16px",  // 进一步缩小 padding
           border: `1px solid ${cardColor}30`,
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
+          flexDirection: "row",  // 横向布局，更紧凑
           alignItems: "center",
-          transform: `translateY(${(1 - progress) * 30}px)`,
+          justifyContent: "space-between",
+          gap: "12px",
+          transform: `translateY(${(1 - progress) * 20}px)`,
           opacity: progress,
+          flex: 1,  // 让卡片均匀分布
         }}
       >
-        {/* 标签 */}
+        {/* 左侧：标签 */}
         <span
           style={{
             color: COLORS.textMuted,
-            fontSize: "26px",
-            marginBottom: "12px",
-            letterSpacing: "2px",
+            fontSize: "16px",  // 进一步缩小
+            letterSpacing: "1px",
           }}
         >
           {card.label}
         </span>
 
-        {/* 数值 */}
-        <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+        {/* 右侧：数值 */}
+        <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
           <span
             style={{
               color: cardColor,
-              fontSize: "64px",
+              fontSize: "32px",  // 缩小字号
               fontWeight: "bold",
               fontFamily: "system-ui, -apple-system, sans-serif",
             }}
           >
-            {card.prefix || ""}{animatedValue.toLocaleString()}
+            {animatedValue.toLocaleString()}
           </span>
-          <span style={{ color: cardColor, fontSize: "28px", opacity: numberProgress }}>
+          <span style={{ color: cardColor, fontSize: "16px", opacity: numberProgress }}>
             {card.suffix || ""}
           </span>
         </div>
@@ -123,14 +127,10 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
     return (
       <div
         style={{
-          position: "absolute",
-          bottom: showChain ? "160px" : "100px",
-          left: "50%",
-          transform: "translateX(-50%)",
           display: "flex",
           alignItems: "center",
           gap: "12px",
-          opacity: titleOpacity,
+          opacity: containerOpacity,
         }}
       >
         {chainNodes.map((node: any, index: number) => {
@@ -191,47 +191,134 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         position: "relative",
         display: "flex",
         flexDirection: "column",
-        padding: showChain ? "60px 80px 200px" : "80px",
         boxSizing: "border-box",
       }}
     >
-      {/* 标题 */}
-      <div style={{ textAlign: "center", marginBottom: "40px", opacity: titleOpacity }}>
+      {/* 背景装饰 - 网格 */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)
+          `,
+          backgroundSize: "50px 50px",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* 顶部标题区域（占 5%） */}
+      <div
+        style={{
+          flex: "0 0 auto",
+          height: "5%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "20px 80px",
+          boxSizing: "border-box",
+        }}
+      >
         <span
           style={{
             display: "inline-block",
             background: "rgba(233, 69, 96, 0.9)",
             color: COLORS.textPrimary,
-            padding: "10px 24px",
+            padding: "8px 20px",
             borderRadius: "4px",
-            fontSize: "22px",
+            fontSize: "20px",
             fontWeight: "bold",
             letterSpacing: "2px",
-            marginBottom: "16px",
+            opacity: containerOpacity,
           }}
         >
           {showChain ? "产业链图谱" : "核心数据"}
         </span>
       </div>
 
-      {/* 数据卡片网格 */}
+      {/* 数据卡片区域（占 20%）- 最小高度，紧凑横向 */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${Math.min(dataCards.length, 2)}, 1fr)`,
-          gridTemplateRows: `repeat(${Math.ceil(dataCards.length / 2)}, 1fr)`,
-          gap: "24px",
-          flex: 1,
-          maxWidth: "900px",
-          margin: "0 auto",
-          width: "100%",
+          flex: "0 0 auto",
+          height: "20%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 80px",
+          boxSizing: "border-box",
         }}
       >
-        {dataCards.map((card, index) => renderDataCard(card, index))}
+        {/* 数据卡片网格 - 横向紧凑布局 */}
+        <div
+          style={{
+            display: "flex",
+            gap: "16px",
+            width: "100%",
+            maxWidth: "900px",
+            justifyContent: "center",
+          }}
+        >
+          {dataCards.map((card, index) => renderDataCard(card, index))}
+        </div>
+
+        {/* 产业链流程条（可选） */}
+        {showChain && renderChainFlow()}
       </div>
 
-      {/* 产业链流程条（可选） */}
-      {renderChainFlow()}
+      {/* 柱状图区域（占 30%）- 中等高度 */}
+      <div
+        style={{
+          flex: "0 0 auto",
+          height: "30%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 80px",
+          boxSizing: "border-box",
+        }}
+      >
+        {(sceneData as any).barChart && (
+          <div style={{ width: "100%", maxWidth: "900px" }}>
+            <BarChart data={(sceneData as any).barChart!} height={200} delay={60} />
+          </div>
+        )}
+      </div>
+
+      {/* 曲线图区域（占 25%）- 最大高度 */}
+      <div
+        style={{
+          flex: "0 0 auto",
+          height: "25%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px 80px",
+          boxSizing: "border-box",
+        }}
+      >
+        {(sceneData as any).lineChart && (
+          <div style={{ width: "100%", maxWidth: "900px" }}>
+            <LineChart data={(sceneData as any).lineChart!} height={200} delay={80} />
+          </div>
+        )}
+      </div>
+
+      {/* 底部字幕缓冲区（剩余空间）- 确保 120px padding */}
+      <div
+        style={{
+          flex: "1 1 auto",
+          minHeight: "120px",
+          padding: "20px 80px 120px",
+          boxSizing: "border-box",
+        }}
+      />
 
       {/* 字幕 */}
       {timing?.sentences && (
