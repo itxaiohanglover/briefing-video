@@ -82,8 +82,8 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           width: "100%",
           height: "100%",
           backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
+            linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)
           `,
           backgroundSize: "50px 50px",
           pointerEvents: "none",
@@ -229,7 +229,6 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         <TimedSubtitles
           sentences={timing.sentences}
           sceneStartFrame={timing.start_frame}
-          style="quote"
         />
       )}
     </div>

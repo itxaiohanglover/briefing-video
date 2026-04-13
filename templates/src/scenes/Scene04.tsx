@@ -13,7 +13,6 @@ interface SceneProps {
 interface DataCard {
   label: string;
   value: number;
-  unit?: string;
   prefix?: string;
   suffix?: string;
   color?: string;
@@ -37,8 +36,7 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
   const dataCards: DataCard[] = rawMetrics.map((m: any, index: number) => ({
     label: m.label,
     value: typeof m.value === 'number' ? m.value : parseFloat(m.value) || 0,
-    unit: m.suffix || m.unit,
-    suffix: m.suffix,
+    suffix: m.suffix || m.unit,  // 优先 suffix，fallback unit
     prefix: m.prefix,
     color: m.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
   }));
@@ -111,7 +109,7 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
             {card.prefix || ""}{animatedValue.toLocaleString()}
           </span>
           <span style={{ color: cardColor, fontSize: "28px", opacity: numberProgress }}>
-            {card.suffix || ""}{card.unit || ""}
+            {card.suffix || ""}
           </span>
         </div>
       </div>
