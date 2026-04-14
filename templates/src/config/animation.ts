@@ -118,31 +118,39 @@ export const ANIMATION_CONFIG = {
 } as const;
 
 /**
- * Spring 动画配置
+ * Spring 动画配置（基于 Remotion 最佳实践）
+ * 参考：remotion-video/skills/remotion/rules/timing.md
  */
 export const SPRING_CONFIG = {
-  // 默认 - 快速弹性
+  // 默认 - 快速弹性（适合一般 UI 元素）
   default: {
     stiffness: 120,
     damping: 20,
   },
 
-  // 柔和 - 缓慢弹性
-  soft: {
-    stiffness: 80,
-    damping: 15,
-  },
-
-  // 弹跳 - 高弹性
-  bouncy: {
-    stiffness: 200,
-    damping: 10,
-  },
-
-  // 平滑 - 几乎无弹性
+  // 平滑 - 无弹跳（适合微妙揭示、淡入淡出）
   smooth: {
     stiffness: 100,
-    damping: 25,
+    damping: 200,
+  },
+
+  // 快速 - 最小弹跳（适合按钮、卡片入场）
+  snappy: {
+    stiffness: 200,
+    damping: 20,
+  },
+
+  // 弹跳 - 高弹性（适合趣味动画、强调元素）
+  bouncy: {
+    stiffness: 200,
+    damping: 8,
+  },
+
+  // 重型 - 慢速小弹跳（适合大元素、背景）
+  heavy: {
+    stiffness: 80,
+    damping: 15,
+    mass: 2,
   },
 } as const;
 

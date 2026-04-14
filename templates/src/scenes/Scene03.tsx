@@ -18,9 +18,15 @@ export const Scene03: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
 
   const { content, highlight } = sceneData;
 
-  // 入场动画
-  const containerOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
-  const containerScale = interpolate(frame, [0, 25], [0.9, 1], { extrapolateRight: "clamp" });
+  // 入场动画（添加缓动）
+  const containerOpacity = interpolate(frame, [0, 20], [0, 1], {
+    easing: (t) => t * t, // Easing.in(Easing.quad) - 快速开始
+    extrapolateRight: "clamp",
+  });
+  const containerScale = interpolate(frame, [0, 25], [0.9, 1], {
+    easing: (t) => t * (2 - t), // Easing.out(Easing.quad) - 平滑结束
+    extrapolateRight: "clamp",
+  });
 
   // 文字逐行显示效果
   const lines: string[] = (content?.split("\n") || []).filter(Boolean);

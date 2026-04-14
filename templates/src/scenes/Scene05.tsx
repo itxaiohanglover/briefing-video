@@ -9,50 +9,120 @@ interface SceneProps {
   timing?: TimingSection;
 }
 
+/**
+ * 打字机效果辅助函数
+ * 参考：remotion-video/skills/remotion/rules/assets/text-animations-typewriter.tsx
+ */
+const getTypedText = ({
+  frame,
+  fullText,
+  pauseAfter,
+  charFrames,
+  pauseFrames,
+}: {
+  frame: number;
+  fullText: string;
+  pauseAfter: string;
+  charFrames: number;
+  pauseFrames: number;
+}): string => {
+  const pauseIndex = fullText.indexOf(pauseAfter);
+  const preLen = pauseIndex >= 0 ? pauseIndex + pauseAfter.length : fullText.length;
+
+  let typedChars = 0;
+  if (frame < preLen * charFrames) {
+    typedChars = Math.floor(frame / charFrames);
+  } else if (frame < preLen * charFrames + pauseFrames) {
+    typedChars = preLen; // 暂停
+  } else {
+    const postPhase = frame - preLen * charFrames - pauseFrames;
+    typedChars = Math.min(fullText.length, preLen + Math.floor(postPhase / charFrames));
+  }
+  return fullText.slice(0, typedChars);
+};
+
+/**
+ * 闪烁光标组件
+ */
+const BlinkingCursor: React.FC<{
+  frame: number;
+  blinkFrames: number;
+  symbol?: string;
+}> = ({ frame, blinkFrames, symbol = "|" }) => {
+  const opacity = interpolate(
+    frame % blinkFrames,
+    [0, blinkFrames / 2, blinkFrames],
+    [1, 0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+  );
+
+  return (
+    <span
+      style={{
+        opacity,
+        fontSize: "inherit",
+        fontWeight: "inherit",
+        color: "inherit",
+      }}
+    >
+      {symbol}
+    </span>
+  );
+};
+
 export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, timing }) => {
   const { fps } = useVideoConfig();
   const frame = useCurrentFrame();
 
   const { title, subtitle } = sceneData;
 
-  // Logo 动画（0-25 帧，0-0.83秒）
+  // Logo 动画（使用 smooth 预设，无弹跳）
   const logoScale = spring({
     frame,
     fps,
     config: {
-      stiffness: 120,
-      damping: 20,
+      damping: 200, // smooth
     },
   });
 
-  // 主标题入场动画
+  // 主标题入场动画（使用 smooth 预设）
   const titleScale = spring({
     frame,
     fps,
     config: {
-      stiffness: 120,
-      damping: 20,
+      damping: 200, // smooth
     },
   });
 
-  // 副标题打字机（40 帧开始）
+  // 打字机配置
   const typewriterStartFrame = 40;
+  const CHAR_FRAMES = 3; // 每个字符 3 帧
+  const CURSOR_BLINK_FRAMES = 16; // 光标每 16 帧闪烁一次
+  const PAUSE_SECONDS = 0.5; // 在句号后暂停 0.5 秒
 
-  // 装饰元素动画
-  const decorOpacity = interpolate(
-    frame,
-    [30, 50],
-    [0, 1],
-    { extrapolateRight: "clamp" }
-  );
+  // 装饰元素动画（添加缓动）
+  const decorOpacity = interpolate(frame, [30, 50], [0, 1], {
+    easing: (t) => t, // 可以添加 Easing.inOut(Easing.quad)
+    extrapolateRight: "clamp",
+  });
 
   // 头像光环旋转
   const avatarRotation = interpolate(frame, [0, durationInFrames], [0, 360], {
     extrapolateRight: "clamp",
   });
 
-  // CTA 按钮错位弹入（70 帧开始）
+  // CTA 按钮错位弹入（使用 snappy 预设，快速最小弹跳）
   const ctaStartFrame = 70;
+
+  // 计算打字机文本
+  const pauseFrames = Math.round(fps * PAUSE_SECONDS);
+  const typedText = getTypedText({
+    frame: frame - typewriterStartFrame,
+    fullText: subtitle || "THANKS FOR WATCHING",
+    pauseAfter: "THANKS FOR WATCHING", // 在第一个句子后暂停
+    charFrames: CHAR_FRAMES,
+    pauseFrames,
+  });
 
   return (
     <div
@@ -172,8 +242,8 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
               frame: frame - (ctaStartFrame + btn.delay),
               fps,
               config: {
-                stiffness: 120,
-                damping: 20,
+                damping: 20, // snappy - 快速最小弹跳
+                stiffness: 200,
               },
             });
             const btnOpacity = interpolate(
@@ -239,37 +309,24 @@ export const Scene05: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
           {title || "谢谢观看"}
         </h1>
 
-        {/* 打字机副标题 */}
-        <p style={{ display: "inline-flex", gap: "2px" }}>
-          {(subtitle || "THANKS FOR WATCHING").split("").map((char, i) => {
-            const charDelay = typewriterStartFrame + i * 3;
-            const charOpacity = interpolate(
-              frame,
-              [charDelay, charDelay + 8],
-              [0, 1],
-              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-            );
-            const charY = interpolate(
-              frame,
-              [charDelay, charDelay + 8],
-              [10, 0],
-              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-            );
-            return (
-              <span
-                key={i}
-                style={{
-                  opacity: charOpacity,
-                  transform: `translateY(${charY}px)`,
-                  fontSize: "40px",
-                  color: COLORS.textSecondary,
-                  margin: 0,
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            );
-          })}
+        {/* 打字机副标题（优化版） */}
+        <p
+          style={{
+            fontSize: "40px",
+            color: COLORS.textSecondary,
+            margin: 0,
+            minHeight: "48px", // 防止高度跳动
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "4px",
+          }}
+        >
+          <span>{typedText}</span>
+          {/* 只在打字完成前显示光标 */}
+          {frame >= typewriterStartFrame && typedText.length < (subtitle || "THANKS FOR WATCHING").length && (
+            <BlinkingCursor frame={frame} blinkFrames={CURSOR_BLINK_FRAMES} />
+          )}
         </p>
 
         {/* 分隔线 */}

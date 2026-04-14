@@ -44,8 +44,11 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
     color: m.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length],
   }));
 
-  // 入场动画
-  const containerOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
+  // 入场动画（添加缓动）
+  const containerOpacity = interpolate(frame, [0, 20], [0, 1], {
+    easing: (t) => t * (2 - t), // Easing.out(Easing.quad) - 平滑淡入
+    extrapolateRight: "clamp",
+  });
 
   // 渲染数据卡片 - 超紧凑版（最小高度）
   const renderDataCard = (card: DataCard, index: number) => {

@@ -32,14 +32,32 @@ export const BarChart: React.FC<BarChartProps> = ({
           frame,
           [itemDelay, itemDelay + 40],
           [0, Math.min((item.value / maxValue) * (height - 40), height - 40)],  // 调整为 height - 40
-          { extrapolateRight: "clamp" }
+          {
+            easing: (t) => t * (2 - t), // Easing.out(Easing.quad) - 平滑生长
+            extrapolateRight: "clamp"
+          }
         );
         const opacity = interpolate(
           frame,
           [itemDelay, itemDelay + 20],
           [0, 1],
-          { extrapolateRight: "clamp" }
+          {
+            easing: (t) => t * (2 - t), // Easing.out(Easing.quad)
+            extrapolateRight: "clamp"
+          }
         );
+
+        // 数值递增动画
+        const numberProgress = interpolate(
+          frame,
+          [itemDelay + 10, itemDelay + 50],
+          [0, 1],
+          {
+            easing: (t) => t * (2 - t), // Easing.out(Easing.quad)
+            extrapolateRight: "clamp"
+          }
+        );
+        const displayValue = Math.floor(item.value * numberProgress);
 
         return (
           <div
@@ -74,7 +92,7 @@ export const BarChart: React.FC<BarChartProps> = ({
             >
               {item.label}
             </div>
-            {/* 数值 */}
+            {/* 数值（带递增动画） */}
             <div
               style={{
                 fontSize: "28px",  // 增大字号
@@ -82,7 +100,7 @@ export const BarChart: React.FC<BarChartProps> = ({
                 color: COLORS.textPrimary,
               }}
             >
-              {item.value}
+              {displayValue}
             </div>
           </div>
         );

@@ -19,13 +19,16 @@ export const LineChart: React.FC<LineChartProps> = ({
     (val, i) => `${i * 60},${height - (val / maxValue) * (height - 20)}`
   ).join(" ");
 
-  // 线条绘制动画
+  // 线条绘制动画（添加缓动）
   const pathLength = 2000;
   const strokeDashoffset = interpolate(
     frame,
     [delay, delay + 60],
     [pathLength, 0],
-    { extrapolateRight: "clamp" }
+    {
+      easing: (t) => t * (2 - t), // Easing.out(Easing.quad) - 平滑绘制
+      extrapolateRight: "clamp",
+    }
   );
 
   return (
