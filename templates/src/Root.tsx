@@ -100,7 +100,7 @@ const NewsVideo: React.FC<NewsVideoFullProps> = ({
       {/* 背景音乐（仅在 public/audio/background.mp3 存在时启用） */}
       {hasBackgroundMusic && (
         <BackgroundMusic
-          src="audio/background.mp3"
+          src={staticFile("audio/background.mp3")}
           videoDurationInFrames={totalFrames}
         />
       )}
