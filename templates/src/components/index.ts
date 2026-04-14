@@ -14,6 +14,7 @@ export { SceneLayout, VerticalSectionLayout, GridBackground, CenteredContent, Gl
 export { BarChart } from './BarChart';
 export { LineChart } from './LineChart';
 export { GaugeChart } from './GaugeChart';
+export { YAxis, generateYAxisSteps } from './YAxis';
 export { KeywordCards } from './KeywordCards';
 export { TimelineSteps } from './TimelineSteps';
 export { DataHighlightBox } from './DataHighlightBox';

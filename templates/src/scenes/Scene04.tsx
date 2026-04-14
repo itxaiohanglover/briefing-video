@@ -1,5 +1,5 @@
 import React from "react";
-import { useVideoConfig, useCurrentFrame, interpolate } from "remotion";
+import { useVideoConfig, useCurrentFrame, interpolate, Sequence } from "remotion";
 import { TimedSubtitles } from "../components/TimedSubtitles";
 import { SceneData, TimingSection } from "../types";
 import { COLORS } from "../colors";
@@ -214,110 +214,153 @@ export const Scene04: React.FC<SceneProps> = ({ sceneData, durationInFrames, tim
         }}
       />
 
-      {/* 顶部标题区域（占 5%） */}
-      <div
-        style={{
-          flex: "0 0 auto",
-          height: "5%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px 80px",
-          boxSizing: "border-box",
-        }}
+      {/* 标题 Sequence - 从 0 帧开始 */}
+      <Sequence
+        from={0}
+        durationInFrames={durationInFrames}
+        premountFor={Math.round(0.5 * fps)}
+        layout="none"
       >
-        <span
-          style={{
-            display: "inline-block",
-            background: "rgba(233, 69, 96, 0.9)",
-            color: COLORS.textPrimary,
-            padding: "8px 20px",
-            borderRadius: "4px",
-            fontSize: "20px",
-            fontWeight: "bold",
-            letterSpacing: "2px",
-            opacity: containerOpacity,
-          }}
-        >
-          {showChain ? "产业链图谱" : "核心数据"}
-        </span>
-      </div>
-
-      {/* 数据卡片区域（占 20%）- 最小高度，紧凑横向 */}
-      <div
-        style={{
-          flex: "0 0 auto",
-          height: "20%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "10px 80px",
-          boxSizing: "border-box",
-        }}
-      >
-        {/* 数据卡片网格 - 横向紧凑布局 */}
         <div
           style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "5%",
             display: "flex",
-            gap: "16px",
-            width: "100%",
-            maxWidth: "900px",
             justifyContent: "center",
+            alignItems: "center",
+            padding: "20px 80px",
+            boxSizing: "border-box",
           }}
         >
-          {dataCards.map((card, index) => renderDataCard(card, index))}
+          <span
+            style={{
+              display: "inline-block",
+              background: "rgba(233, 69, 96, 0.9)",
+              color: COLORS.textPrimary,
+              padding: "8px 20px",
+              borderRadius: "4px",
+              fontSize: "20px",
+              fontWeight: "bold",
+              letterSpacing: "2px",
+              opacity: containerOpacity,
+            }}
+          >
+            {showChain ? "产业链图谱" : "核心数据"}
+          </span>
         </div>
+      </Sequence>
 
-        {/* 产业链流程条（可选） */}
-        {showChain && renderChainFlow()}
-      </div>
-
-      {/* 柱状图区域（占 30%）- 中等高度 */}
-      <div
-        style={{
-          flex: "0 0 auto",
-          height: "30%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "10px 80px",
-          boxSizing: "border-box",
-        }}
+      {/* 数据卡片 Sequence - 从 0 帧开始 */}
+      <Sequence
+        from={0}
+        durationInFrames={durationInFrames}
+        premountFor={Math.round(0.5 * fps)}
+        layout="none"
       >
-        {(sceneData as any).barChart && (
-          <div style={{ width: "100%", maxWidth: "900px" }}>
-            <BarChart data={(sceneData as any).barChart!} height={200} delay={60} />
+        <div
+          style={{
+            position: "absolute",
+            top: "5%",
+            left: 0,
+            right: 0,
+            height: "20%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 80px",
+            boxSizing: "border-box",
+          }}
+        >
+          {/* 数据卡片网格 - 横向紧凑布局 */}
+          <div
+            style={{
+              display: "flex",
+              gap: "16px",
+              width: "100%",
+              maxWidth: "900px",
+              justifyContent: "center",
+            }}
+          >
+            {dataCards.map((card, index) => renderDataCard(card, index))}
           </div>
-        )}
-      </div>
 
-      {/* 曲线图区域（占 25%）- 最大高度 */}
-      <div
-        style={{
-          flex: "0 0 auto",
-          height: "25%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "10px 80px",
-          boxSizing: "border-box",
-        }}
+          {/* 产业链流程条（可选） */}
+          {showChain && renderChainFlow()}
+        </div>
+      </Sequence>
+
+      {/* 柱状图 Sequence - 从 60 帧开始（2秒 @ 30fps） */}
+      <Sequence
+        from={60}
+        durationInFrames={durationInFrames - 60}
+        premountFor={Math.round(0.5 * fps)}
+        layout="none"
       >
-        {(sceneData as any).lineChart && (
-          <div style={{ width: "100%", maxWidth: "900px" }}>
-            <LineChart data={(sceneData as any).lineChart!} height={200} delay={80} />
-          </div>
-        )}
-      </div>
+        <div
+          style={{
+            position: "absolute",
+            top: "25%",
+            left: 0,
+            right: 0,
+            height: "30%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 80px",
+            boxSizing: "border-box",
+          }}
+        >
+          {(sceneData as any).barChart && (
+            <div style={{ width: "100%", maxWidth: "900px" }}>
+              <BarChart data={(sceneData as any).barChart!} height={200} delay={0} />
+            </div>
+          )}
+        </div>
+      </Sequence>
+
+      {/* 曲线图 Sequence - 从 80 帧开始（约2.67秒 @ 30fps） */}
+      <Sequence
+        from={80}
+        durationInFrames={durationInFrames - 80}
+        premountFor={Math.round(0.5 * fps)}
+        layout="none"
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "55%",
+            left: 0,
+            right: 0,
+            height: "25%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 80px",
+            boxSizing: "border-box",
+          }}
+        >
+          {(sceneData as any).lineChart && (
+            <div style={{ width: "100%", maxWidth: "900px" }}>
+              <LineChart data={(sceneData as any).lineChart!} height={200} delay={0} />
+            </div>
+          )}
+        </div>
+      </Sequence>
 
       {/* 底部字幕缓冲区（剩余空间）- 确保 120px padding */}
       <div
         style={{
-          flex: "1 1 auto",
-          minHeight: "120px",
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "20%",
           padding: "20px 80px 120px",
           boxSizing: "border-box",
         }}
