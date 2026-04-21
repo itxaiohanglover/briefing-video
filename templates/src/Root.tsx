@@ -13,6 +13,8 @@ import {
 } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { BackgroundMusic } from "./components/BackgroundMusic";
+import { buildSceneAudioSrc, resolveSceneComponent, resolveTimingSection } from "./utils/sceneRuntime.ts";
+import { sceneComponents } from "./scenes/generated.ts";
 import type { SceneData } from "./types";
 
 // 导入配置文件
@@ -21,22 +23,6 @@ import timingDataRaw from "../public/audio/timing.json";
 
 const FPS = 30;
 const TRANSITION_FRAMES = 15; // 过渡 15 帧 (0.5s)
-
-// 导入场景组件
-import { Scene01 } from "./scenes/Scene01";
-import { Scene02 } from "./scenes/Scene02";
-import { Scene03 } from "./scenes/Scene03";
-import { Scene04 } from "./scenes/Scene04";
-import { Scene05 } from "./scenes/Scene05";
-
-// 场景组件映射
-const sceneComponents: Record<string, React.FC<any>> = {
-  intro: Scene01,
-  slideshow: Scene02,
-  subtitle: Scene03,
-  dashboard: Scene04,
-  outro: Scene05,
-};
 
 // 场景类型列表（顺序）
 const SCENE_TYPES = ["intro", "slideshow", "subtitle", "dashboard", "outro"];
@@ -108,9 +94,13 @@ const NewsVideo: React.FC<NewsVideoFullProps> = ({
       {/* 场景序列（带过渡） */}
       <TransitionSeries>
         {enabledScenes.map(({ scene, type, index, timing }, arrayIndex) => {
-          const SceneComponent = sceneComponents[type];
+          const SceneComponent = resolveSceneComponent(sceneComponents, scene);
           const duration = timing.duration_frames;
-          const audioSrc = `audio/scene_0${index + 1}.mp3`;
+          const audioSrc = buildSceneAudioSrc(index);
+
+          if (!SceneComponent) {
+            return null;
+          }
 
           return (
             <React.Fragment key={index}>
@@ -147,13 +137,11 @@ export const RemotionRoot: React.FC = () => {
   const { scenes } = scenesData;
   const { sections } = timingData;
 
-  // 匹配场景和时序数据（按 type/label 匹配，而非索引）
+  // 匹配场景和时序数据（按 scene.id 优先，退回相同索引）
   const enabledScenes: EnabledSceneItem[] = scenes
     .map((scene, index) => {
       const type = scene.type as string;
-      // 优先按 scene.id 匹配 timing section name，再按 type 匹配 label
-      const timing = sections.find(s => s.name === scene.id)
-        || sections.find(s => s.label === type);
+      const timing = resolveTimingSection(sections, scene, index);
 
       if (!timing || !scene.enabled) return null;
 
