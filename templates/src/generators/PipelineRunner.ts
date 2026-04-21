@@ -4,6 +4,7 @@ import type { ParsedMarkdownDocument } from '../parser/types.ts';
 import { ConfigGenerator } from './ConfigGenerator.ts';
 import { SceneRegistryGenerator } from './SceneRegistryGenerator.ts';
 import { TimingGenerator } from './TimingGenerator.ts';
+import { SceneConfigValidator } from '../utils/SceneConfigValidator.ts';
 
 export interface PipelineRunnerInput {
   document: ParsedMarkdownDocument;
@@ -20,10 +21,22 @@ export class PipelineRunner {
   private readonly configGenerator = new ConfigGenerator();
   private readonly timingGenerator = new TimingGenerator();
   private readonly sceneRegistryGenerator = new SceneRegistryGenerator();
+  private readonly validator = new SceneConfigValidator();
 
   run(input: PipelineRunnerInput): PipelineRunnerResult {
     const scenes = this.configGenerator.generate(input.document);
     const timing = this.timingGenerator.generate(input.document);
+
+    // 验证配置
+    const validationErrors = this.validator.validate(scenes.scenes);
+    if (validationErrors.length > 0) {
+      console.warn('Scene configuration validation warnings:');
+      validationErrors.forEach((error) => {
+        console.warn(
+          `  Scene ${error.sceneIndex}: ${error.field} - ${error.message}`
+        );
+      });
+    }
 
     const scenesPath = join(input.outputDir, 'scenes.json');
     const timingDir = join(input.outputDir, 'public', 'audio');

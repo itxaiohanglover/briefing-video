@@ -18,7 +18,7 @@ DEFAULT_VOICE = "zh-CN-YunxiNeural"
 VOICE = os.environ.get("EDGE_TTS_VOICE", DEFAULT_VOICE)
 RATE = os.environ.get("EDGE_TTS_RATE", "+0%")
 FPS = 30
-AUDIO_NAMING = os.environ.get("BRIEFING_VIDEO_AUDIO_NAMING", "scene-id")
+AUDIO_NAMING = os.environ.get("BRIEFING_VIDEO_AUDIO_NAMING", "legacy-sequence")
 
 # 需要从 narration 中移除的字符（会导致 edge-tts 失败）
 TTS_CHAR_REPLACEMENTS = {
