@@ -2,9 +2,13 @@
   "name": "briefing-video",
   "version": "1.0.0",
   "description": "政务/产业新闻简报短视频生成",
+  "type": "module",
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion render src/index.ts NewsVideo out/video.mp4",
+    "build:video": "node --experimental-strip-types scripts/build-video.ts",
+    "process:new": "node --experimental-strip-types scripts/process-new.ts",
+    "generate:audio": "node --experimental-strip-types scripts/generate-audio.ts",
     "upgrade": "remotion upgrade"
   },
   "dependencies": {

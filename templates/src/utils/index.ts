@@ -4,3 +4,5 @@
 
 export * from "./helpers";
 export * from "./performance";
+export * from "./TemplateLoader.ts";
+export * from "./sceneRuntime.ts";

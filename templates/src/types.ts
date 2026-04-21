@@ -71,6 +71,7 @@ export interface SceneData {
   type: SceneType;
   enabled: boolean;
   narration: string;
+  template?: string;
   title?: string;
   subtitle?: string;
 
